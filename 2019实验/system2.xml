@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan update, grip, send;
+clock t1, t2, t3;</declaration>
+	<template>
+		<name>RobotArm</name>
+		<location id="id0" x="-8" y="-68">
+			<name x="-18" y="-102">y2</name>
+			<label kind="invariant" x="-18" y="-51">t3&lt;=5</label>
+		</location>
+		<location id="id1" x="-229" y="-68">
+			<name x="-239" y="-102">y1</name>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-93" y="-25">update!</label>
+			<nail x="-102" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-144" y="-85">send?</label>
+			<label kind="assignment" x="-178" y="-34">t3:=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Controler</name>
+		<location id="id2" x="119" y="144">
+			<name x="109" y="110">s2</name>
+			<label kind="invariant" x="109" y="161">t1&lt;=5</label>
+		</location>
+		<location id="id3" x="204" y="-8">
+			<name x="194" y="-42">s3</name>
+		</location>
+		<location id="id4" x="0" y="0">
+			<name x="-10" y="-34">s1</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="136" y="34">send!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="18" y="55">grip?</label>
+			<label kind="assignment" x="18" y="72">t1:=0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="59" y="-25">update?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Arm</name>
+		<location id="id5" x="85" y="-51">
+			<name x="75" y="-85">x2</name>
+			<label kind="invariant" x="75" y="-34">t2&lt;=10</label>
+		</location>
+		<location id="id6" x="-144" y="-42">
+			<name x="-154" y="-76">x1</name>
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<nail x="8" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-51" y="-68">grip!</label>
+			<label kind="assignment" x="-68" y="-8">t2:=0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+system Arm, Controler, RobotArm;
+// List one or more processes to be composed into a system.
+
+    </system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>

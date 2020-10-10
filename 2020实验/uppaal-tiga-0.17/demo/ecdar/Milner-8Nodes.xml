@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+// Values of N, D and d must satisfy certain constraints in order
+// that the property holds of the network and that the invariants go through.
+// In particular N*d must not be too small compare with D 
+// (d*(N-1) &gt; D ?
+// Here given the smallest value for d for given N and D.
+
+const int N = 8;
+const int D = 30;
+const int d = 10; //9;
+typedef int[0,N-1] id_t;
+
+broadcast chan rec[N];
+broadcast chan w[N];
+</declaration><template><name x="5" y="5">NodeAlt</name><parameter>const id_t id</parameter><declaration>// Place local declarations here.
+clock x, y;</declaration><location id="id0" x="32" y="0"><label kind="invariant" x="-24" y="-8">x&lt;=D</label></location><location id="id1" x="160" y="-64"><label kind="invariant" x="150" y="-49">x&lt;=D</label></location><location id="id2" x="-96" y="-64"><label kind="invariant" x="-106" y="-49">x&lt;=D</label></location><location id="id3" x="32" y="-128"></location><init ref="id0"/><transition action=""><source ref="id1"/><target ref="id1"/><label kind="synchronisation" x="216" y="-80">rec[id]?</label><nail x="208" y="-32"/><nail x="208" y="-104"/></transition><transition action=""><source ref="id2"/><target ref="id2"/><label kind="synchronisation" x="-192" y="-72">rec[id]?</label><nail x="-144" y="-32"/><nail x="-144" y="-96"/></transition><transition action=""><source ref="id0"/><target ref="id0"/><label kind="synchronisation" x="8" y="48">rec[id]?</label><nail x="0" y="48"/><nail x="64" y="48"/></transition><transition controllable="false" action=""><source ref="id1"/><target ref="id3"/><label kind="synchronisation" x="96" y="-120">w[id]!</label></transition><transition controllable="false" action=""><source ref="id2"/><target ref="id3"/><label kind="guard" x="-120" y="-136">y&gt;d</label><label kind="synchronisation" x="-120" y="-120">rec[(id+1)%N]!</label></transition><transition controllable="false" action=""><source ref="id0"/><target ref="id2"/><label kind="synchronisation" x="-72" y="-40">w[id]!</label></transition><transition controllable="false" action=""><source ref="id0"/><target ref="id1"/><label kind="guard" x="80" y="-24">y&gt;d</label><label kind="synchronisation" x="80" y="-8">rec[(id+1)%N]!</label></transition><transition action=""><source ref="id3"/><target ref="id0"/><label kind="synchronisation" x="-16" y="-80">rec[id]?</label><label kind="assignment" x="0" y="-64">x=0,
+y=0</label></transition></template><template><name>Spec1</name><declaration>clock z;</declaration><location id="id4" x="-224" y="-96"><label kind="invariant" x="-200" y="-104">z&lt;=2*D</label></location><init ref="id4"/><transition controllable="false" action=""><source ref="id4"/><target ref="id4"/><label kind="select" x="-256" y="-192">e:id_t</label><label kind="synchronisation" x="-256" y="-176">rec[e]!</label><nail x="-272" y="-144"/><nail x="-184" y="-144"/></transition><transition controllable="false" action=""><source ref="id4"/><target ref="id4"/><label kind="select" x="-256" y="-40">e:id_t</label><label kind="synchronisation" x="-256" y="-24">w[e]!</label><label kind="assignment" x="-256" y="-8">z=0</label><nail x="-272" y="-40"/><nail x="-176" y="-40"/></transition></template><template><name x="5" y="5">Node</name><parameter>const id_t id</parameter><declaration>// Place local declarations here.
+clock x, y;</declaration><location id="id5" x="32" y="0"><label kind="invariant" x="-24" y="-8">x&lt;=D</label></location><location id="id6" x="160" y="-64"><label kind="invariant" x="150" y="-49">x&lt;=D</label></location><location id="id7" x="-96" y="-64"><label kind="invariant" x="-106" y="-49">x&lt;=D</label></location><location id="id8" x="32" y="-128"></location><init ref="id8"/><transition action=""><source ref="id6"/><target ref="id6"/><label kind="synchronisation" x="216" y="-80">rec[id]?</label><nail x="208" y="-32"/><nail x="208" y="-104"/></transition><transition action=""><source ref="id7"/><target ref="id7"/><label kind="synchronisation" x="-192" y="-72">rec[id]?</label><nail x="-144" y="-32"/><nail x="-144" y="-96"/></transition><transition action=""><source ref="id5"/><target ref="id5"/><label kind="synchronisation" x="8" y="48">rec[id]?</label><nail x="0" y="48"/><nail x="64" y="48"/></transition><transition controllable="false" action=""><source ref="id6"/><target ref="id8"/><label kind="synchronisation" x="96" y="-120">w[id]!</label></transition><transition controllable="false" action=""><source ref="id7"/><target ref="id8"/><label kind="guard" x="-120" y="-136">y&gt;d</label><label kind="synchronisation" x="-120" y="-120">rec[(id+1)%N]!</label></transition><transition controllable="false" action=""><source ref="id5"/><target ref="id7"/><label kind="synchronisation" x="-72" y="-40">w[id]!</label></transition><transition controllable="false" action=""><source ref="id5"/><target ref="id6"/><label kind="guard" x="80" y="-24">y&gt;d</label><label kind="synchronisation" x="80" y="-8">rec[(id+1)%N]!</label></transition><transition action=""><source ref="id8"/><target ref="id5"/><label kind="synchronisation" x="-16" y="-80">rec[id]?</label><label kind="assignment" x="0" y="-64">x=0,
+y=0</label></transition></template><template><name>Spec</name><parameter>const id_t id</parameter><declaration>clock z;</declaration><location id="id9" x="-224" y="-96"><label kind="invariant" x="-200" y="-104">z&lt;=(N+1)*D</label></location><init ref="id9"/><transition controllable="false" action=""><source ref="id9"/><target ref="id9"/><label kind="select" x="-320" y="-144">e:id_t</label><label kind="guard" x="-320" y="-128">e!=id</label><label kind="synchronisation" x="-312" y="-112">w[e]!</label><nail x="-280" y="-128"/><nail x="-280" y="-72"/></transition><transition controllable="false" action=""><source ref="id9"/><target ref="id9"/><label kind="select" x="-256" y="-192">e:id_t</label><label kind="synchronisation" x="-256" y="-176">rec[e]!</label><nail x="-272" y="-144"/><nail x="-184" y="-144"/></transition><transition controllable="false" action=""><source ref="id9"/><target ref="id9"/><label kind="synchronisation" x="-248" y="-40">w[id]!</label><label kind="assignment" x="-248" y="-24">z=0</label><nail x="-272" y="-40"/><nail x="-176" y="-40"/></transition></template><template><name>SubSpec</name><parameter>const id_t id</parameter><declaration>clock x, y, z;</declaration><location id="id10" x="-16" y="48"></location><location id="id11" x="-128" y="96"></location><location id="id12" x="-128" y="0"><label kind="invariant" x="-184" y="8">x&lt;=id*D</label></location><location id="id13" x="-128" y="-96"><label kind="comments">Specification of nodes 
+ N1 || .. || Ni
+
+Actions: rec[1]?
+         w[e]! 0&lt;e&lt;=i
+         rec[i+1]!
+
+Assumption:
+  * &gt; N*d between two rec[1]?
+  * No two rec[1]? without
+    a rec[i+1]!
+  
+Guarantee:
+  * After any rec[1]? then
+    rec[i+1]! in [i*d,i*D]</label></location><init ref="id13"/><transition controllable="false" action=""><source ref="id11"/><target ref="id11"/><label kind="select" x="-128" y="128">e:id_t</label><label kind="guard" x="-128" y="144">e&gt;0 &amp;&amp; e&lt;=id</label><label kind="synchronisation" x="-128" y="160">w[e]!</label><label kind="comments">Problem that w[e]! may lead to zeno-bahviour leading to a counter strategy.</label><nail x="-96" y="128"/><nail x="-136" y="128"/></transition><transition controllable="false" action=""><source ref="id12"/><target ref="id12"/><label kind="select" x="-96" y="-80">e:id_t</label><label kind="guard" x="-96" y="-64">e&gt;0 &amp;&amp; e&lt;=id</label><label kind="synchronisation" x="-96" y="-48">w[e]!</label><nail x="-112" y="-48"/><nail x="-88" y="-32"/></transition><transition controllable="false" action=""><source ref="id10"/><target ref="id10"/><label kind="select" x="48" y="24">e:id_t</label><label kind="guard" x="48" y="40">e&gt;0 &amp;&amp; e&lt;=id</label><label kind="synchronisation" x="48" y="56">w[e]!</label><nail x="48" y="40"/><nail x="48" y="72"/></transition><transition action=""><source ref="id10"/><target ref="id10"/><label kind="synchronisation" x="-32" y="72">rec[1]?</label><nail x="-32" y="72"/><nail x="16" y="80"/></transition><transition controllable="false" action=""><source ref="id10"/><target ref="id10"/><label kind="synchronisation" x="16" y="0">rec[(id+1)%N]!</label><nail x="-8" y="8"/><nail x="24" y="24"/></transition><transition action=""><source ref="id11"/><target ref="id12"/><label kind="guard" x="-288" y="8">y&gt;N*d</label><label kind="synchronisation" x="-288" y="32">rec[1]?</label><label kind="assignment" x="-272" y="48">x=0,
+y=0</label><label kind="comments">Assumption:
+
+Next rec[1]? should come earliest after id*d from previous rec[1]? and earliest after D-d from rec[i+1]!</label><nail x="-240" y="96"/><nail x="-240" y="0"/></transition><transition controllable="false" action=""><source ref="id12"/><target ref="id11"/><label kind="guard" x="-184" y="32">x&gt;=id*d</label><label kind="synchronisation" x="-224" y="48">rec[(id+1)%N]!</label><label kind="comments">Guarantee:
+After any rec[1]? then
+    rec[i+1]! in [i*d,i*D]</label></transition><transition action=""><source ref="id11"/><target ref="id10"/><label kind="guard" x="-112" y="56">y&lt;=N*d</label><label kind="synchronisation" x="-104" y="80">rec[1]?</label><label kind="comments">Assumption:
+&gt; N*d between two rec[1]?</label></transition><transition action=""><source ref="id12"/><target ref="id10"/><label kind="synchronisation" x="-96" y="-8">rec[1]?</label><label kind="comments">Assumption:
+
+No two rec[1]? without a rec[i+1]!</label></transition><transition action=""><source ref="id13"/><target ref="id12"/><label kind="synchronisation" x="-176" y="-72">rec[1]?</label><label kind="assignment" x="-168" y="-56">x=0, 
+y=0</label></transition></template><template><name>NonZeno</name><parameter>const id_t id</parameter><declaration>clock v;</declaration><location id="id14" x="-128" y="-64"><label kind="comments">Minimum time seperation d between w[e]! where 0&lt;e&lt;=id</label></location><init ref="id14"/><transition controllable="false" action=""><source ref="id14"/><target ref="id14"/><label kind="select" x="-64" y="-80">e:id_t</label><label kind="guard" x="-64" y="-64">0&gt;e &amp;&amp; e&lt;=id 
+&amp;&amp; v&gt;=d</label><label kind="synchronisation" x="-64" y="-32">w[e]!</label><label kind="assignment" x="-64" y="-16">v=0</label><nail x="-80" y="-16"/><nail x="-80" y="-80"/></transition><transition controllable="false" action=""><source ref="id14"/><target ref="id14"/><label kind="synchronisation" x="-208" y="-152">rec[(id+1)%N]!</label><nail x="-184" y="-112"/><nail x="-128" y="-136"/></transition><transition action=""><source ref="id14"/><target ref="id14"/><label kind="synchronisation" x="-240" y="-48">rec[1]?</label><nail x="-192" y="-64"/><nail x="-192" y="-8"/></transition></template><template><name>SimpleSpec</name><location id="id15" x="-160" y="-96"></location><init ref="id15"/><transition action=""><source ref="id15"/><target ref="id15"/><label kind="synchronisation" x="-176" y="-40">rec[1]?</label><nail x="-192" y="-40"/><nail x="-128" y="-40"/></transition></template><system>// Nodes .. N0 has been instantiated so that it is ready to work 
+// pass on token
+N0 := NodeAlt(0);
+N1 := Node(1);
+N2 := Node(2);
+N3 := Node(3);
+N4 := Node(4);
+N5 := Node(5);
+N6 := Node(6);
+N7 := Node(7);
+
+// Overall specification claiming that w[i] will occur with a
+// minimal frequency
+S0 := Spec(0);
+S1 := Spec(1);
+S2 := Spec(2);
+S3 := Spec(3);
+S4 := Spec(4);
+S5 := Spec(5);
+
+// Specifications for subsystems of decreasing size
+SS7 := SubSpec(7);
+SS6 := SubSpec(6);
+SS5 := SubSpec(5);
+SS4 := SubSpec(4);
+SS3 := SubSpec(3);
+SS2 := SubSpec(2);
+SS1 := SubSpec(1);
+
+// List one or more processes to be composed into a system.
+system N0, N1, N2, N3, N4, N5, N6, N7,
+       S0, SS7, SS6, SS5, SS4, SS3, SS2, SS1;
+
+//system SS2, N3, SS3;
+
+IO N0 { rec[1]!, w[0]!, rec[0]? }
+IO N1 { rec[2]!, w[1]!, rec[1]? }
+IO N2 { rec[3]!, w[2]!, rec[2]? }
+IO N3 { rec[4]!, w[3]!, rec[3]? }
+IO N4 { rec[5]!, w[4]!, rec[4]? }
+IO N5 { rec[6]!, w[5]!, rec[5]? }
+IO N6 { rec[7]!, w[6]!, rec[6]? }
+IO N7 { rec[0]!, w[7]!, rec[7]? }
+
+IO S0 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+IO S1 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+IO S2 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+IO S3 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+IO S4 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+IO S5 { rec[0]!, rec[1]!, rec[2]!, rec[3]!, rec[4]!, rec[5]!, rec[6]!, rec[7]!,
+        w[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+
+IO SS1 { rec[1]?, rec[2]!, w[1]! }
+IO SS2 { rec[1]?, rec[3]!, w[1]!, w[2]! }
+IO SS3 { rec[1]?, rec[4]!, w[1]!, w[2]!, w[3]! }
+IO SS4 { rec[1]?, rec[5]!, w[1]!, w[2]!, w[3]!, w[4]! }
+IO SS5 { rec[1]?, rec[6]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]! }
+IO SS6 { rec[1]?, rec[7]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]! }
+IO SS7 { rec[1]?, rec[0]!, w[1]!, w[2]!, w[3]!, w[4]!, w[5]!, w[6]!, w[7]! }
+</system></nta>

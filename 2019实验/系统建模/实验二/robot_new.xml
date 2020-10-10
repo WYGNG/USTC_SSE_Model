@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+clock t1,t2,t3;
+
+// Channels between the Arm and the Controler
+chan grip;
+
+// Channels between the Controler and the RobotArm
+chan send, update;</declaration>
+	<template>
+		<name x="5" y="5">Controler</name>
+		<declaration>// Place local declarations here.
+int t1=0;</declaration>
+		<location id="id0" x="0" y="0">
+			<name x="-10" y="-34">s1</name>
+		</location>
+		<location id="id1" x="153" y="221">
+			<name x="143" y="187">s2</name>
+			<label kind="exponentialrate" x="93" y="221">t1&lt;=5</label>
+		</location>
+		<location id="id2" x="282" y="0">
+			<name x="272" y="-34">s3</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="119" y="-25">update?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="238" y="93">send!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="18" y="93">grip?</label>
+			<label kind="assignment" x="18" y="110">t1:=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>RobotArm</name>
+		<declaration>int t2=0;</declaration>
+		<location id="id3" x="-204" y="-77">
+			<name x="-214" y="-111">s1</name>
+		</location>
+		<location id="id4" x="85" y="-76">
+			<name x="75" y="-110">s2</name>
+			<label kind="invariant" x="75" y="-59">t2&lt;=10</label>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<nail x="8" y="-144"/>
+			<nail x="-119" y="-144"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-85" y="-8">grip!</label>
+			<label kind="assignment" x="-42" y="-8">t2:=0</label>
+			<nail x="-119" y="-17"/>
+			<nail x="0" y="-17"/>
+		</transition>
+	</template>
+	<template>
+		<name>Arm</name>
+		<declaration>int t3=0;</declaration>
+		<location id="id5" x="-204" y="-77">
+			<name x="-214" y="-111">s1</name>
+		</location>
+		<location id="id6" x="85" y="-85">
+			<name x="75" y="-119">s2</name>
+			<label kind="invariant" x="75" y="-68">t3&lt;=5</label>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-76" y="-153">update!</label>
+			<nail x="8" y="-127"/>
+			<nail x="-127" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-68" y="-59">send?</label>
+			<label kind="assignment" x="-68" y="-25">t3:=0</label>
+			<nail x="-127" y="-34"/>
+			<nail x="17" y="-34"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+system Controler, RobotArm, Arm;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

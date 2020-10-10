@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='utf-8'?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+typedef int[0,1] id_t;
+typedef int[0,1] intbool_t;
+
+//Each outlet needs to have a contribution
+//dividable by the different number of active inlet
+//I.e. 3x2x1
+const int PER_OUT_CONTRIBUTION = 6;
+
+const int NEITHER = 0;
+const int WANT    = 1;
+const int HAVE    = 2;
+
+typedef int[0,2] choice_t;
+
+//Neighbor zones want to give or get air
+choice_t n[2] = {NEITHER,NEITHER};
+
+//Neighbor temperature. Lower/equal (0) or Higher (1)
+bool temp[2] = {false,false};
+
+//Neighbor humidity. Lower/equal (0) or Higher (1)
+bool humid[2] = {false,false};
+
+//Objective. 0: cool, 1: heat
+bool objective = false;
+
+//Which zone is hotter
+bool hottest = false;
+
+//Which zone is more humid
+bool morehumid = false;
+
+//Humidity need to be decresed
+bool decrease_humidity = false;
+
+//CONTROLLABLE VARIABLE SECTION
+//
+//I want air from the zones have air to give
+choice_t c[2] = {NEITHER,NEITHER};
+
+// inlet open/closed
+bool inlet = false;
+
+//Heater on/off
+bool heater = false;
+
+//Outlet on/off
+bool outlet = false;
+
+//END CONTROLLABLE VARIABLE SECTION true;
+
+int[-20000,20000] obj_func = 0;
+
+chan state_changed;
+
+int compute_temperature(const choice_t c0, const choice_t c1, const intbool_t in, const intbool_t out, const intbool_t heat)
+{
+int o,i,amp;
+//active out-flow
+o = out + (c0 == HAVE &amp;&amp; n[0] == WANT) + (c1 == HAVE &amp;&amp; n[1] == WANT);
+//active in-flow
+i = in  + (c0 == WANT &amp;&amp; n[0] == HAVE) + (c1 == WANT &amp;&amp; n[1] == HAVE);
+i = i &gt;? 1;
+//Multiplier per incoming flow
+amp = (o * PER_OUT_CONTRIBUTION) / i;
+if (objective) //heating
+{
+  return PER_OUT_CONTRIBUTION*5*heat
+       + amp*(c0 == WANT &amp;&amp; n[0] == HAVE ? (temp[0] ? (!hottest ? 2 : 1) :  (hottest? -2:-1)) : 0)
+       + amp*(c1 == WANT &amp;&amp; n[1] == HAVE ? (temp[1] ? ( hottest ? 2 : 1) : (!hottest? -2:-1)) : 0)
+       + amp*(in ? -7 : 0)
+       + -(c0 == HAVE) //Motivation for participation, even when neighbor doesn't want, or has air
+       + -(c1 == HAVE); //Motivation for participation, even when neighbor doesn't want, or has air
+}
+else //cooling
+{
+  return PER_OUT_CONTRIBUTION*-5*heat
+       + amp*(in ? 7 : 0)
+       + amp*(c0 == WANT &amp;&amp; n[0] == HAVE ? (!temp[0] ? ( hottest ? 2 : 1) : (!hottest? -2:-1)) : 0)
+       + amp*(c1 == WANT &amp;&amp; n[1] == HAVE ? (!temp[1] ? (!hottest ? 2 : 1) : (hottest ? -2:-1)) : 0)
+       + (c0 == HAVE) //Motivation for participation, even when neighbor doesn't want, or has air
+       + (c1 == HAVE); //Motivation for participation, even when neighbor doesn't want, or has air
+}
+}
+
+int compute_humidity(const choice_t c0, const choice_t c1, const intbool_t in, const intbool_t out, const intbool_t heat)
+{
+int o,i,amp;
+//active out-flow
+o = out + (c0 == HAVE &amp;&amp; n[0] == WANT) + (c1 == HAVE &amp;&amp; n[1] == WANT);
+//active in-flow
+i = in  + (c0 == WANT &amp;&amp; n[0] == HAVE) + (c1 == WANT &amp;&amp; n[1] == HAVE);
+i = i &gt;? 1;
+//Multiplier per incoming flow
+amp = (o * PER_OUT_CONTRIBUTION) / i;
+if (decrease_humidity)
+{
+  return heat
+       + amp*(c0 == WANT &amp;&amp; n[0] == HAVE ? (!humid[0] ? (morehumid ? 2 : 1) : (!morehumid ? -2 : -1)) : 0)
+       + amp*(c1 == WANT &amp;&amp; n[1] == HAVE ? (!humid[1] ? (!morehumid? 2 : 1) : ( morehumid ? -2 : -1)) : 0)
+       + amp*(5*in)
+       + (!humid[0] &amp;&amp; c0 == WANT ? 1 : 0)
+       + (!humid[1] &amp;&amp; c1 == WANT ? 1 : 0);
+}
+return 0;
+}
+
+int compute_objective_function(const choice_t c0, const choice_t c1, const intbool_t in, const intbool_t out, const intbool_t heat)
+{
+return 35*compute_temperature(c0,c1,in,out,heat)
+     + 65*compute_humidity(c0,c1,in,out,heat);
+}
+
+void check_hotness_integrity()
+{
+  if (temp[0] == temp[1])
+  {
+    return;
+  }
+  if (temp[0] &gt; temp[1])
+  {
+    hottest = false;
+  }
+  else
+  {
+    hottest = true;
+  }
+}
+
+void check_humidity_integrity()
+{
+  if (humid[0] == humid[1])
+  {
+    return;
+  }
+  if (humid[0] &gt; humid[1])
+  {
+    morehumid = false;
+  }
+  else
+  {
+    morehumid = true;
+  }
+}
+
+bool flow_balance(const choice_t n0, const choice_t n1, bool in, bool out)
+{
+  bool o = out || (n[0] == WANT  &amp;&amp; n0 == HAVE) || (n[1] == WANT &amp;&amp; n1 == HAVE);
+  bool i = in  || (n[0] ==HAVE   &amp;&amp; n0 == WANT) || (n[1] == HAVE &amp;&amp; n1 == WANT);
+  return o == i;
+}
+
+void reset_variables()
+{
+  inlet  = 0;
+  outlet = 0;
+  heater = 0;
+  c[0]   = NEITHER;
+  c[1]   = NEITHER;
+  obj_func = 0;  
+}</declaration><template><name x="5" y="5">Neighbor</name><parameter>const id_t id</parameter><declaration>// Place local declarations here.
+</declaration><location id="id0" x="1168" y="720"><urgent/></location><init ref="id0"/><transition controllable="false"><source ref="id0"/><target ref="id0"/><label kind="synchronisation" x="1136" y="848">state_changed!</label><label kind="assignment" x="1104" y="816">humid[id] = !humid[id],
+check_humidity_integrity()</label><nail x="1144" y="808"/><nail x="1200" y="808"/></transition><transition controllable="false"><source ref="id0"/><target ref="id0"/><label kind="synchronisation" x="992" y="744">state_changed!</label><label kind="assignment" x="904" y="680">temp[id] = !temp[id],
+check_hotness_integrity()</label><nail x="1080" y="744"/><nail x="1080" y="688"/></transition><transition controllable="false"><source ref="id0"/><target ref="id0"/><label kind="select" x="1272" y="688">c : choice_t</label><label kind="synchronisation" x="1272" y="712">state_changed!</label><label kind="assignment" x="1272" y="736">n[id] = c</label><nail x="1264" y="688"/><nail x="1264" y="744"/></transition></template><template><name>ZoneController</name><location id="id1" x="-104" y="-72"><name x="-88" y="-80">Decided</name><committed/></location><location id="id2" x="-176" y="-232"><name x="-200" y="-264">Decide</name><committed/></location><location id="id3" x="-176" y="-72"><name x="-216" y="-80">Init</name></location><init ref="id2"/><transition><source ref="id1"/><target ref="id3"/><label kind="assignment" x="-192" y="-56">reset_variables()</label></transition><transition><source ref="id2"/><target ref="id1"/><label kind="select" x="-96" y="-280">c0 : choice_t,
+c1 : choice_t,
+heat : intbool_t,
+in : intbool_t,
+out : intbool_t</label><label kind="guard" x="-96" y="-200">flow_balance(c0,c1,in,out)</label><label kind="assignment" x="-96" y="-176">c[0] = c0,
+c[1] = c1,
+heater = heat,
+inlet = in,
+outlet = out,
+obj_func = compute_objective_function(c0,c1,in,out,heat)</label><nail x="-104" y="-232"/></transition><transition><source ref="id3"/><target ref="id2"/><label kind="synchronisation" x="-288" y="-160">state_changed?</label></transition></template><template><name>StateChanger</name><location id="id4" x="-204" y="-80"></location><init ref="id4"/><transition controllable="false"><source ref="id4"/><target ref="id4"/><label kind="synchronisation" x="-256" y="-168">state_changed!</label><label kind="assignment" x="-328" y="-184">decrease_humidity = !decrease_humidity</label><nail x="-232" y="-144"/><nail x="-184" y="-144"/></transition><transition controllable="false"><source ref="id4"/><target ref="id4"/><label kind="guard" x="-264" y="-8">humid[0] == humid[1]</label><label kind="synchronisation" x="-264" y="8">state_changed!</label><label kind="assignment" x="-264" y="24">morehumid = !morehumid</label><nail x="-224" y="-16"/><nail x="-176" y="-16"/></transition><transition controllable="false"><source ref="id4"/><target ref="id4"/><label kind="guard" x="-412" y="-104">temp[0] == temp[1]</label><label kind="synchronisation" x="-380" y="-72">state_changed!</label><label kind="assignment" x="-400" y="-88">hottest = !hottest</label><nail x="-264" y="-104"/><nail x="-264" y="-64"/></transition><transition controllable="false"><source ref="id4"/><target ref="id4"/><label kind="synchronisation" x="-136" y="-88">state_changed!</label><label kind="assignment" x="-136" y="-112">objective = !objective</label><nail x="-144" y="-104"/><nail x="-144" y="-64"/></transition></template><system>// Place template instantiations here.
+
+ZC = ZoneController();
+// List one or more processes to be composed into a system.
+system Neighbor, ZC, StateChanger;</system></nta>

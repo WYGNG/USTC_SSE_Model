@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+chan up;
+chan down;
+
+int MAX = 10;
+
+int __reach__ = 0;
+int __single__ = 0;
+</declaration>
+	<template>
+		<name x="5" y="5">System</name>
+		<declaration>// Place local declarations here.
+
+int val = 0;</declaration>
+		<location id="id0" x="263" y="-153">
+			<name x="280" y="-179">Max</name>
+			<label kind="testcodeEnter">expect_max();</label>
+		</location>
+		<location id="id1" x="136" y="-93">
+			<name x="119" y="-76">On</name>
+			<label kind="testcodeEnter">expect_on($(System.val));</label>
+		</location>
+		<location id="id2" x="8" y="-17">
+			<name x="-26" y="-17">Off</name>
+			<label kind="testcodeEnter">expect_off();</label>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="212" y="-42">val&lt;MAX-1</label>
+			<label kind="synchronisation" x="212" y="-25">up?</label>
+			<label kind="assignment" x="212" y="-8">val++</label>
+			<label kind="testcode">up();</label>
+			<nail x="203" y="-42"/>
+			<nail x="263" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="51" y="-178">val&gt;1</label>
+			<label kind="synchronisation" x="51" y="-161">down?</label>
+			<label kind="assignment" x="51" y="-144">val--</label>
+			<label kind="testcode">down();</label>
+			<nail x="51" y="-127"/>
+			<nail x="102" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="238" y="-136">down?</label>
+			<label kind="assignment" x="238" y="-119">val--</label>
+			<label kind="testcode">down();</label>
+			<nail x="187" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="153" y="-195">val == MAX-1</label>
+			<label kind="synchronisation" x="153" y="-178">up?</label>
+			<label kind="assignment" x="153" y="-161">val++</label>
+			<label kind="testcode">up();</label>
+			<nail x="221" y="-153"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="51" y="17">val==1</label>
+			<label kind="synchronisation" x="51" y="-17">down?</label>
+			<label kind="assignment" x="51" y="0">val--</label>
+			<label kind="testcode">down();</label>
+			<nail x="42" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-34" y="-68">up?</label>
+			<label kind="assignment" x="-34" y="-51">val++</label>
+			<label kind="testcode">up();</label>
+			<nail x="102" y="-93"/>
+		</transition>
+	</template>
+	<template>
+		<name>User</name>
+		<location id="id3" x="-17" y="-17">
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-25" y="34">down!</label>
+			<nail x="-42" y="34"/>
+			<nail x="9" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-26" y="-85">up!</label>
+			<nail x="-43" y="-68"/>
+			<nail x="8" y="-68"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+system System, User;
+
+
+/* PREFIX
+package app;
+import app.App;
+
+class Test extends App {
+
+    public static void main(String[] args) {
+
+*/
+
+/* POSTFIX
+    }
+}
+*/
+</system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; System.Max
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>

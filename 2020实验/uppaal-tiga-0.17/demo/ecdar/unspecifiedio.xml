@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>broadcast chan a,b;</declaration><template><name x="5" y="5">A</name><declaration>// Place local declarations here.
+</declaration><location id="id0" x="0" y="-64"></location><init ref="id0"/><transition controllable="false" action=""><source ref="id0"/><target ref="id0"/><label kind="synchronisation" x="56" y="-80">a!</label><nail x="48" y="-96"/><nail x="48" y="-32"/></transition></template><template><name>B</name><location id="id1" x="-256" y="-128"></location><init ref="id1"/><transition action=""><source ref="id1"/><target ref="id1"/><label kind="synchronisation" x="-200" y="-144">b?</label><nail x="-208" y="-160"/><nail x="-208" y="-96"/></transition></template><template><name>AA</name><location id="id2" x="-480" y="-320"></location><init ref="id2"/><transition action=""><source ref="id2"/><target ref="id2"/><label kind="synchronisation" x="-424" y="-336">a?</label><nail x="-432" y="-352"/><nail x="-432" y="-288"/></transition></template><system>system A,B,AA;
+
+IO A { a! }
+IO B { b? }
+IO AA { a? }</system></nta>

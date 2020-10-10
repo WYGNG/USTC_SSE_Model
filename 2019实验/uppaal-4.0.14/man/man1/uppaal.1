@@ -1,0 +1,47 @@
+.TH UPPAAL 1 local
+.SH NAME
+uppaal \- An integrated tool environment for modelling, validation and
+verification of real-time systems
+.SH SYNOPSIS
+.B uppaal
+[
+.BI - "option value"
+] ...
+[
+.BI "URL"
+]
+.SH DESCRIPTION
+.I UPPAAL
+is an integrated tool environment for modelling, validation and
+verification of real-time systems modelled as networks of timed
+automata, extended with data types (bounded integers, arrays etc.)
+.SH OPTIONS
+.TP
+.B --antialias on|off
+Turn anti-aliasing on/off.
+.TP
+.B --engineName name
+Set the name of the engine binary.
+.TP
+.B --enginePath path
+Set the path to the engine binaries.
+.TP
+.B --serverPort number
+Set the server port number.
+.TP
+.B --serverHost name
+Set the server host name.
+.TP
+.B --native on|off
+If on, try to execute and establish a direct connection to the engine.
+.TP
+.B --server on|off
+If on, try to connect to a running engine using TCP/IP.
+.TP
+.B --psColors on|off
+PostScript colours on/off.
+.SH THANKS
+Thanks to John A. Murdie for contributing a draft of this man-page.
+.SH SEE ALSO
+.nf
+UPPAAL home page at http://www.uppaal.com

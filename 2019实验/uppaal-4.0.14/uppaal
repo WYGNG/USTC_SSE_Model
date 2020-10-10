@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+#  
+# Run this script to start UPPAAL 4.0.x.
+#
+
+# Default options if needed.
+JAVA_DEF=""
+
+# Force language if LANG is defined.
+if [ ! -z "$LANG" ]; then
+  JAVA_DEF="$JAVA_DEF -Duser.language=${LANG/_*/}"
+fi
+
+# Fix splash option if no splash is asked (Java 6).
+for opt in $* ; do
+  if [ "$opt" = "--no-splash" ]; then
+    JAVA_DEF="$JAVA_DEF -splash:/dev/null"
+    break
+  fi
+done
+
+# Setup.
+HERE=$(dirname "$(readlink -e $0)")
+if [ "`uname -o`" = "Cygwin" ]; then
+  HERE="${HERE/#\/cygdrive\//}"
+  HERE="${HERE/\//:/}"
+  ENGINE="$HERE/bin-Win32"
+else
+  ENGINE="$HERE/bin-`uname`"
+fi
+JAR="$HERE/uppaal.jar"
+
+# No antialias if remote execution (better performance).
+if [ "$DISPLAY" = ":0.0" -o "$DISPLAY" = ":0" ]; then 
+  java $JAVA_DEF -jar "$JAR" --enginePath "$ENGINE" $* 
+else
+  java $JAVA_DEF -splash:/dev/null -jar "$JAR" --enginePath "$ENGINE" --antialias off $* 
+fi
